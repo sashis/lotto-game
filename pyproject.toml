@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "lotto-game"
+version = "0.1.0"
+description = "Lotto, a russian on-board game for console"
+license = "MIT"
+authors = ["Aleksandr Kropanev <kropanev@mail.ru>"]
+readme = "README.md"
+repository = "https://github.com/sashis/lotto-game"
+packages = [{ include = "lotto" }]
+
+[tool.poetry.scripts]
+lotto = "lotto:run"
+
+[tool.poetry.dependencies]
+python = "^3.9.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.8.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
