@@ -1,12 +1,14 @@
-from lotto.config import choose_players
+from .config import LottoConfig, terminal_width
+from .game import Lotto
 
 
 def run():
-    # print_greetings()
-    players = choose_players()
-    print(players)
-    # winners = play_game(players)
-    # greet_winners(winners)
-    # say_goodbye()
-
-
+    print('Лото (консольная версия).'.center(terminal_width), '\n')
+    cfg = LottoConfig()
+    lotto = Lotto(**cfg.as_params)
+    winners = lotto.play_game()
+    if not winners:
+        print('Нет победителей.\n')
+    else:
+        names = ', '.join(p.name for p in winners)
+        print(f'Поздравляем, {names}, с победой!!!\n')

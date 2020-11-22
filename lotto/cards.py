@@ -7,13 +7,23 @@ class Card:
         self._numbers = set(n for row in self._rows for n in row if n != 0)
         self._marked = set()
 
-    def __eq__(self, other):
-        if not isinstance(other, Card):
-            return False
-        return self._numbers == other._numbers
-
     def __contains__(self, item):
         return item in self._numbers
+
+    @property
+    def all_marked(self):
+        return not self._numbers
+
+    @property
+    def as_table(self):
+        table_str = []
+        for row in self._rows:
+            row_str = []
+            for n in row:
+                cell = 'XX' if n in self._marked else str(n or '').rjust(2)
+                row_str.append(cell)
+            table_str.append(row_str)
+        return table_str
 
     def mark_number(self, number):
         try:

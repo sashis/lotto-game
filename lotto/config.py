@@ -1,55 +1,56 @@
-from typing import TypeVar, Callable, Type
+from .helpers import valid_input
+from .players import ComputerPlayer, HumanPlayer, Player
 
-T = TypeVar('T')
-
-
-def valid_input(prompt: str,
-                value_type: Type[T],
-                default_value: T,
-                validate: Callable[[T], bool] = lambda v: True) -> T:
-    prompt_with_default = f'{prompt} [{default_value}]: '
-    is_valid = False
-    while not is_valid:
-        raw_value = input(prompt_with_default)
-        try:
-            value = value_type(raw_value) if raw_value else default_value
-        except ValueError:
-            continue
-        is_valid = validate(value)
-    return value
+terminal_width = 46
 
 
-def choose_players():
-    count = valid_input(
-        prompt='Сколько будет игроков (2-5)',
-        value_type=int,
-        default_value=2,
-        validate=lambda v: 2 <= v <= 5
-    )
-    return [configure_player(i + 1) for i in range(count)]
+class LottoConfig:
+    def __init__(self):
+        self.max_count = 5
+        self.player_types = {
+            'человек': HumanPlayer,
+            'компьютер': ComputerPlayer
+        }
+        self._players: list[Player] = []
+        for _ in range(self._set_player_count()):
+            self._set_player()
 
+    def _set_player_count(self):
+        return valid_input(
+            prompt=f'Сколько будет игроков (2-{self.max_count})',
+            value_type=int,
+            default_value=2,
+            validate=lambda v: 2 <= v <= self.max_count
+        )
 
-def configure_player(num):
-    print(f'Параметры игрока #{num}')
-    type_ = choose_player_type()
-    name = choose_player_name(f'Игрок{num}')
-    return type_, name
+    def _set_player(self):
+        idx_player = len(self._players) + 1
+        print(f'Параметры игрока #{idx_player}')
+        type_cls = self._choose_player_type()
+        name = self._choose_player_name()
+        self._players.append(type_cls(name))
 
+    def _choose_player_type(self):
+        types_name = list(self.player_types.keys())
+        types_cnt = len(types_name)
+        type_idx = valid_input(
+            prompt=f'Тип игрока ({"/".join(types_name)})',
+            value_type=int,
+            default_value=1,
+            validate=lambda v: 1 <= v <= types_cnt
+        )
+        return self.player_types[types_name[type_idx - 1]]
 
-def choose_player_type():
-    types = ['человек', 'компьютер']
-    type_ = valid_input(
-        prompt=f'Тип игрока ({"/".join(types)})',
-        value_type=int,
-        default_value=1,
-        validate=lambda v: v in (1, 2)
-    )
-    return types[type_ - 1]
+    def _choose_player_name(self):
+        used_names = [p.name for p in self._players]
+        default_name = f'Игрок{len(used_names) + 1}'
+        return valid_input(
+            prompt='Имя игрока',
+            value_type=str,
+            default_value=default_name,
+            validate=lambda v: v not in used_names
+        )
 
-
-def choose_player_name(default):
-    return valid_input(
-        prompt='Имя игрока',
-        value_type=str,
-        default_value=default
-    )
+    @property
+    def as_params(self):
+        return {'players': self._players}
