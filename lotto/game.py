@@ -59,7 +59,7 @@ class Lotto:
         stats = (f'Новый бочонок: {self.kegs.current}'.ljust(half_size) +
                  f'(осталось {self.kegs.remained})'.rjust(half_size))
         print(stats)
-        print('=' * 46)
+        print('=' * terminal_width)
         for player in self.players_in_game:
             print(player)
         print('\n')
