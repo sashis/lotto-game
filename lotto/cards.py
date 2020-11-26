@@ -1,4 +1,5 @@
 from random import randint, sample
+from typing import Iterable
 
 
 class Card:
@@ -50,7 +51,7 @@ def make_row() -> list[int]:
     return [get_rand(col) * i for col, i in enumerate(row)]
 
 
-def valid_column(column: list[int]) -> bool:
+def valid_column(column: Iterable[int]) -> bool:
     only_nums = [x for x in column if x != 0]
     no_repeats = len(only_nums) == len(set(only_nums))
     return no_repeats and 0 < len(only_nums) < 3
